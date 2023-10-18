@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/user.model";
 import CustomErrorHandler from "../utils/CustomErrorHandler";
+import ReturnResponse from "../interface/returnResponse";
 
 interface SignupRequestBody {
   password: string;
@@ -14,6 +15,7 @@ export async function signup(
   res: Response,
   next: NextFunction
 ) {
+  let returnResponse: ReturnResponse;
   try {
     const { email, password, username } = req.body;
     const hashedpw = await bcrypt.hash(password, 10);
@@ -22,7 +24,12 @@ export async function signup(
       username,
       password: hashedpw,
     });
-    return res.status(201).json({ message: user });
+    returnResponse = {
+      status: "success",
+      message: "User successfully created",
+      data: user,
+    };
+    return res.status(201).json(returnResponse);
   } catch (err: any) {
     const error = new CustomErrorHandler(
       "validation failed " + err.message,
