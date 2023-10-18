@@ -1,1 +1,1 @@
-export const { PORT } = process.env;
+export const { PORT,DB_URI } = process.env;
