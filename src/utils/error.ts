@@ -1,7 +1,7 @@
 import { NextFunction, Response, Request } from "express";
 import CustomErrorHandler from "./CustomErrorHandler";
 import { NODE_ENV } from "../config";
-import ReturnResponse from "../interface/returnResponse";
+import { ReturnResponse } from "../interface/returnResponse";
 
 export function error(
   err: CustomErrorHandler,

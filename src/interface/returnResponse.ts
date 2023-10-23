@@ -1,6 +1,14 @@
-interface ReturnResponse {
+import { Document } from "mongoose";
+
+export interface ReturnResponse {
   status: "success" | "error";
   message: string;
   data: object[] | object;
 }
-export default ReturnResponse;
+
+export interface UserDocument extends Document {
+  _doc: {
+    password: string;
+    email: string;
+  };
+}
