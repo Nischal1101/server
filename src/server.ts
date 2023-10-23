@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import { PORT } from "./config";
 import db from "./db/connect";
 import userRouter from "./routes/user.routes";
@@ -10,7 +11,19 @@ app.use(express.json());
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 
-
+declare global {
+  namespace Express {
+    interface Request {
+      user: {
+        _id: string;
+        password: string;
+        username: string;
+        avatar: string;
+      };
+    }
+  }
+}
+app.use(cookieParser());
 app.use(error);
 
 db()
