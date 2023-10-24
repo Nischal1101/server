@@ -17,7 +17,12 @@ export async function updateUser(
       const err = new CustomErrorHandler("Can only update own account", 401);
       next(err);
     }
-    const hashedUpdatedPw = await bcrypt.hash(password, 10);
+    let hashedUpdatedPw;
+    if (password) {
+      hashedUpdatedPw = await bcrypt.hash(password, 10);
+    } else {
+      hashedUpdatedPw = password;
+    }
     const updatedUser: UserDocument | null = await User.findByIdAndUpdate(
       id,
       {
@@ -38,10 +43,10 @@ export async function updateUser(
     returnResponse = {
       status: "success",
       message: "User updated successfully",
-      data: { rest },
+      data: rest,
     };
     return res.status(200).json(returnResponse);
-  } catch (error) {
+  } catch (error: any) {
     const err = new CustomErrorHandler(error.message, 500);
     next(err);
   }

@@ -59,7 +59,6 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
       { _id: finduser._id, email: finduser._doc.email },
       PUBLIC_KEY!
     );
-
     const { password: pass, ...rest } = finduser._doc;
     returnResponse = {
       status: "success",
