@@ -51,3 +51,36 @@ export async function updateUser(
     next(err);
   }
 }
+
+export async function deleteUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  let returnResponse: ReturnResponse;
+  try {
+    const { id } = req.params;
+    if (req.user._id !== id) {
+      const err = new CustomErrorHandler("Can only delete own account", 401);
+      next(err);
+    }
+    const result = await User.findById(id);
+    if (!result) {
+      const err = new CustomErrorHandler(
+        "User to be deleted doesn't exist",
+        500
+      );
+      next(err);
+    }
+    await User.findByIdAndDelete(id);
+    returnResponse = {
+      status: "success",
+      message: "User deleted successfully",
+      data: {},
+    };
+    return res.status(200).json(returnResponse);
+  } catch (error: any) {
+    const err = new CustomErrorHandler(error.message, 500);
+    next(err);
+  }
+}
