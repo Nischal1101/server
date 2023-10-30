@@ -9,8 +9,9 @@ export function error(
   res: Response,
   next: NextFunction
 ) {
+  let returnResponse: ReturnResponse;
   let statusCode = err.statusCode || 500;
-  let returnResponse: ReturnResponse = {
+  returnResponse = {
     status: "error",
     message: NODE_ENV === "dev" ? err.message : "Internal Server Error",
     data: {},

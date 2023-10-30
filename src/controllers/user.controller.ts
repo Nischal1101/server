@@ -17,7 +17,7 @@ export async function updateUser(
       const err = new CustomErrorHandler("Can only update own account", 401);
       next(err);
     }
-    let hashedUpdatedPw;
+    let hashedUpdatedPw: string;
     if (password) {
       hashedUpdatedPw = await bcrypt.hash(password, 10);
     } else {
@@ -78,7 +78,7 @@ export async function deleteUser(
       message: "User deleted successfully",
       data: {},
     };
-    return res.status(200).json(returnResponse);
+    return res.status(200).json(returnResponse).clearCookie("access_token");
   } catch (error: any) {
     const err = new CustomErrorHandler(error.message, 500);
     next(err);

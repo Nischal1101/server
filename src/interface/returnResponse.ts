@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+import { Response } from "express";
 
 export interface ReturnResponse {
   status: "success" | "error";
@@ -15,4 +16,4 @@ export interface UserDocument extends Document {
   };
 }
 
-// interface CustomRequest extends Request {
+

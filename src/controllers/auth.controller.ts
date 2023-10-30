@@ -63,7 +63,7 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
     returnResponse = {
       status: "success",
       message: "User successfully logged in",
-      data: { rest },
+      data: rest,
     };
     return res
       .cookie("access_token", accessToken, { httpOnly: true })
@@ -96,7 +96,7 @@ export const google = async (
       returnResponse = {
         status: "success",
         message: "User successfully logged in",
-        data: { rest },
+        data: rest,
       };
       return res
         .cookie("access_token", accessToken, { httpOnly: true })
@@ -124,5 +124,25 @@ export const google = async (
   } catch (error) {
     const err = new CustomErrorHandler("Internal server error", 500);
     return next(err);
+  }
+};
+
+export const signout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let returnResponse: ReturnResponse;
+  try {
+    res.clearCookie("access_token");
+    returnResponse = {
+      status: "success",
+      message: "User has been logged out!",
+      data: {},
+    };
+    res.status(200).json(returnResponse);
+  } catch (error: any) {
+    const err = new CustomErrorHandler(error.message, 500);
+    next(err);
   }
 };
