@@ -17,7 +17,7 @@ export const createListing = async (
       data: listing,
     };
     return res.status(201).json(returnResponse);
-  } catch (error) {
+  } catch (error: any) {
     next(new CustomErrorHandler(error.message, 500));
   }
 };
