@@ -4,6 +4,7 @@ import { PORT } from "./config";
 import db from "./db/connect";
 import userRouter from "./routes/user.routes";
 import authRouter from "./routes/auth.routes";
+import listingRouter from "./routes/listing.routes";
 import { error } from "./utils/error";
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/listing", listingRouter);
 
 declare global {
   namespace Express {
