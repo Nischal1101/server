@@ -3,6 +3,7 @@ import CustomErrorHandler from "../utils/CustomErrorHandler";
 import User from "./../models/user.model";
 import { ReturnResponse, UserDocument } from "../interface/returnResponse";
 import bcrypt from "bcrypt";
+import Listing from "./../models/listing.model";
 
 export async function updateUser(
   req: Request,
@@ -81,6 +82,30 @@ export async function deleteUser(
     return res.status(200).json(returnResponse).clearCookie("access_token");
   } catch (error: any) {
     const err = new CustomErrorHandler(error.message, 500);
-    next(err);
+    return next(err);
   }
 }
+
+export const getUserListings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let returnResponse: ReturnResponse;
+  try {
+    if (req.user.id !== req.params.id) {
+      const err = new CustomErrorHandler("Can only get own listings", 401);
+      return next(err);
+    }
+    const listings = await Listing.find({ userRef: req.params.id });
+    returnResponse = {
+      status: "success",
+      message: "Listings fetched successfully",
+      data: listings,
+    };
+    res.status(200).json(returnResponse);
+  } catch (error: any) {
+    const err = new CustomErrorHandler(error.message, 500);
+    return next(err);
+  }
+};
