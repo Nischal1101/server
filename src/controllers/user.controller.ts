@@ -93,7 +93,7 @@ export const getUserListings = async (
 ) => {
   let returnResponse: ReturnResponse;
   try {
-    if (req.user.id !== req.params.id) {
+    if (req.user._id !== req.params.id) {
       const err = new CustomErrorHandler("Can only get own listings", 401);
       return next(err);
     }

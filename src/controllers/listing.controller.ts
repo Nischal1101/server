@@ -21,3 +21,29 @@ export const createListing = async (
     next(new CustomErrorHandler(error.message, 500));
   }
 };
+
+export const deleteListing = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let returnResponse: ReturnResponse;
+  const listing = await Listing.findById(req.params.id);
+  if (!listing) {
+    return next(new CustomErrorHandler("Listing not found", 404));
+  }
+  if (req.user._id !== listing.userRef) {
+    return next(new CustomErrorHandler("Unauthorized", 401));
+  }
+  try {
+    await Listing.findByIdAndDelete(req.params.id);
+    returnResponse = {
+      status: "success",
+      message: "Listing deleted successfully",
+      data: {},
+    };
+    res.status(200).json(returnResponse);
+  } catch (error) {
+    return next(new CustomErrorHandler("Something went wrong", 500));
+  }
+};
