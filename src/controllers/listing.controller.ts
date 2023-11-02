@@ -43,7 +43,63 @@ export const deleteListing = async (
       data: {},
     };
     res.status(200).json(returnResponse);
-  } catch (error) {
-    return next(new CustomErrorHandler("Something went wrong", 500));
+  } catch (error: any) {
+    return next(new CustomErrorHandler(error.message, 500));
   }
 };
+
+export const updateListing = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let returnResponse: ReturnResponse;
+  const listing = await Listing.findById(req.params.id);
+  if (!listing) {
+    return next(new CustomErrorHandler("Listing not found", 404));
+  }
+  if (req.user._id !== listing.userRef) {
+    return next(new CustomErrorHandler("Unauthorized", 401));
+  }
+  try {
+    const updatedListing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedListing) {
+      const err = new CustomErrorHandler("Internal server error", 500);
+      return next(err);
+    }
+    returnResponse = {
+      status: "success",
+      message: "Listing updated successfully",
+      data: updatedListing,
+    };
+    res.status(200).json(returnResponse);
+  } catch (error: any) {
+    return next(new CustomErrorHandler(error.message, 500));
+  }
+};
+
+
+
+export const getListing=async(req:Request,res:Response,next:NextFunction)=>
+{
+  let returnResponse:ReturnResponse;
+  try {
+    const listing=await Listing.findById(req.params.id);
+    if(!listing)
+    {
+      return next(new CustomErrorHandler("Listing not found",404));
+    }
+    returnResponse={
+      status:"success",
+      message:"Listing found",
+      data:listing
+    }
+    res.status(200).json(returnResponse);
+  } catch (error:any) {
+    return next(new CustomErrorHandler(error.message,500));
+  }
+}
