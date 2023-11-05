@@ -109,3 +109,26 @@ export const getUserListings = async (
     return next(err);
   }
 };
+
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let returnResponse: ReturnResponse;
+  try {
+    const user: UserDocument | null = await User.findById(req.params.id);
+    if (!user) {
+      return next(new CustomErrorHandler("User not found", 404));
+    }
+    const { password, ...rest } = user._doc;
+    returnResponse = {
+      status: "success",
+      message: "User fetched successfully",
+      data: rest,
+    };
+    res.status(200).json(returnResponse);
+  } catch (error: any) {
+    return next(new CustomErrorHandler(error.message, 500));
+  }
+};
