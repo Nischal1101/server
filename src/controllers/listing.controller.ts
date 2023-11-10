@@ -82,24 +82,75 @@ export const updateListing = async (
   }
 };
 
-
-
-export const getListing=async(req:Request,res:Response,next:NextFunction)=>
-{
-  let returnResponse:ReturnResponse;
+export const getListing = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let returnResponse: ReturnResponse;
   try {
-    const listing=await Listing.findById(req.params.id);
-    if(!listing)
-    {
-      return next(new CustomErrorHandler("Listing not found",404));
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) {
+      return next(new CustomErrorHandler("Listing not found", 404));
     }
-    returnResponse={
-      status:"success",
-      message:"Listing found",
-      data:listing
-    }
+    returnResponse = {
+      status: "success",
+      message: "Listing found",
+      data: listing,
+    };
     res.status(200).json(returnResponse);
-  } catch (error:any) {
-    return next(new CustomErrorHandler(error.message,500));
+  } catch (error: any) {
+    return next(new CustomErrorHandler(error.message, 500));
   }
-}
+};
+
+export const getListings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let returnResponse: ReturnResponse;
+  try {
+    const limit = parseInt(req.query.limit as string) || 9;
+    const startIndex = parseInt(req.query.startIndex as string) || 0;
+    let offer: string | object = req.query.offer!;
+    let furnished: string | object = req.query.furnished!;
+    let parking: string | object = req.query.parking!;
+    let type: string | object = req.query.type!;
+
+    if (offer === undefined || offer === "false") {
+      offer = { $in: [false, true] };
+    }
+    if (furnished === undefined || furnished === "false") {
+      furnished = { $in: [false, true] };
+    }
+    if (parking === undefined || parking === "false") {
+      parking = { $in: [false, true] };
+    }
+    if (type === undefined || type === "false") {
+      type = { $in: ["sale", "rent"] };
+    }
+    const searchTerm = req.query.searchTerm || "";
+    const sort: string = (req.query.sort as string) || "createdAt";
+    const order: "asc" | "desc" = (req.query.order as "asc" | "desc") || "desc";
+    // const order:'asc'|'desc' = req.query.order as string || "desc";
+    const listings = await Listing.find({
+      name: { $regex: searchTerm, $options: "i" },
+      offer,
+      furnished,
+      parking,
+      type,
+    })
+      .sort({ [sort]: order })
+      .limit(limit)
+      .skip(startIndex);
+    returnResponse = {
+      status: "success",
+      message: "Listings found",
+      data: listings,
+    };
+    return res.status(200).json(returnResponse.data);
+  } catch (error: any) {
+    return next(new CustomErrorHandler(error.message, 500));
+  }
+};
